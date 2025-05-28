@@ -30,7 +30,7 @@ if "page" not in st.session_state:
 def set_page(p):
     st.session_state.page = p
 
-# Custom styled top navbar
+
 def render_navbar():
     st.markdown("""
     <style>
