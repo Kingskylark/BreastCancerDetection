@@ -41,24 +41,26 @@ def home():
     with col1:
         if st.button("🔎 Manual Input"):
             st.session_state.page = "Manual Input"
-            st.experimental_rerun()
-
+            
+            
     with col2:
         if st.button("📂 Upload Dataset"):
             st.session_state.page = "Upload Dataset"
-            st.experimental_rerun()
+            
 
     st.markdown("---")
     if st.button("ℹ️ About / Class Info"):
         st.session_state.page = "About / Class Info"
-        st.experimental_rerun()
+
+
+        
 
 def back_to_home():
     if st.session_state.page != "Home":
         st.markdown("---")
         if st.button("🏠 Back to Home"):
             st.session_state.page = "Home"
-            
+            st.experimental_rerun()
 
 
 def manual_input():
