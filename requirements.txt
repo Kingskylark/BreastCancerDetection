@@ -5,3 +5,4 @@ joblib
 matplotlib
 seaborn
 Pillow
+scikit-learn
