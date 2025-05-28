@@ -4,7 +4,6 @@ import numpy as np
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
-from PIL import Image
 
 st.set_page_config(
     page_title="Breast Cancer Predictor",
@@ -23,6 +22,60 @@ features = [
     'radius_mean', 'area_mean', 'concavity_mean', 'concavity_worst'
 ]
 
+# Initialize session state
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
+
+# Navigation function
+def set_page(p):
+    st.session_state.page = p
+
+# Custom styled top navbar
+def render_navbar():
+    st.markdown("""
+    <style>
+        .nav-container {
+            background-color: #f3f3f3;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .nav-button {
+            background-color: transparent;
+            border: none;
+            color: #333;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .nav-button.active {
+            background-color: #6c63ff;
+            color: white;
+            border-radius: 10px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+    with col1:
+        if st.button("🏠 Home", key="home"):
+            set_page("Home")
+    with col2:
+        if st.button("✍️ Manual Input", key="manual"):
+            set_page("Manual Input")
+    with col3:
+        if st.button("📁 Upload", key="upload"):
+            set_page("Upload Dataset")
+    with col4:
+        if st.button("ℹ️ About", key="about"):
+            set_page("About / Class Info")
+
+# Pages
 def home():
     st.image("assets/breastCancer.jpeg", width=100)
     st.title("Breast Cancer Prediction System")
@@ -30,36 +83,8 @@ def home():
     Welcome to the **Breast Cancer Prediction System**.
 
     This tool allows you to either **upload a dataset** for batch predictions, or **manually enter feature values** to predict whether a breast tumor is **Benign** or **Malignant**.
-
-    > **Note**: On mobile devices, the sidebar may be hidden. Use the options below directly by double clicking any option.
     """)
-
-    st.subheader("Choose an Action Below:")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("🔎 Manual Input"):
-            st.session_state.page = "Manual Input"
-            
-            
-    with col2:
-        if st.button("📂 Upload Dataset"):
-            st.session_state.page = "Upload Dataset"
-            
-
-    st.markdown("---")
-    if st.button("ℹ️ About / Class Info"):
-        st.session_state.page = "About / Class Info"
-
-
-def back_to_home():
-    if st.session_state.page != "Home":
-        st.markdown("---")
-        if st.button("🏠 Back to Home"):
-            st.session_state.page = "Home"
-            
-
+    st.info("Use the navbar above to get started.")
 
 def manual_input():
     st.header("Manual Input Prediction")
@@ -92,7 +117,6 @@ def manual_input():
         sns.barplot(x=["Benign", "Malignant"], y=probabilities, ax=ax)
         ax.set_title("Prediction Probability")
         st.pyplot(fig)
-    back_to_home()
 
 def upload_dataset():
     st.header("Batch Prediction from CSV")
@@ -113,7 +137,6 @@ def upload_dataset():
             output = pd.concat([data, results], axis=1)
             st.dataframe(output)
 
-            # Selection option
             st.subheader("Select a Patient for Detailed Analysis")
             patient_index = st.selectbox("Select Row Index", options=output.index.tolist())
             patient_data = output.loc[patient_index]
@@ -129,7 +152,6 @@ def upload_dataset():
 
             csv = output.to_csv(index=False).encode("utf-8")
             st.download_button("Download Predictions", csv, "predictions.csv", "text/csv")
-    back_to_home()
 
 def about():
     st.header("About & Class Information")
@@ -143,8 +165,8 @@ def about():
     **Features Explained:**
     These features are derived from digitized images of breast mass FNA scans.
     """)
-    back_to_home()
-# Navigation
+
+# Page mapping
 pages = {
     "Home": home,
     "Manual Input": manual_input,
@@ -152,15 +174,8 @@ pages = {
     "About / Class Info": about
 }
 
-# Initialize session state for navigation
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
-    
-# Sidebar navigation (sets session state)
-st.sidebar.title("Navigation")
-selection = st.sidebar.radio("Go to", list(pages.keys()), index=list(pages.keys()).index(st.session_state.page))
-st.session_state.page = selection
+# Render navigation bar
+render_navbar()
 
-# Render the selected page
-
+# Display selected page
 pages[st.session_state.page]()
