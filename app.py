@@ -30,7 +30,36 @@ def home():
     Welcome to the **Breast Cancer Prediction System**.
 
     This tool allows you to either **upload a dataset** for batch predictions, or **manually enter feature values** to predict whether a breast tumor is **Benign** or **Malignant**.
+
+    > **Note**: On mobile devices, the sidebar may be hidden. Use the options below directly.
     """)
+
+    st.subheader("Choose an Action Below:")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("🔎 Manual Input"):
+            st.session_state.page = "Manual Input"
+            st.experimental_rerun()
+
+    with col2:
+        if st.button("📂 Upload Dataset"):
+            st.session_state.page = "Upload Dataset"
+            st.experimental_rerun()
+
+    st.markdown("---")
+    if st.button("ℹ️ About / Class Info"):
+        st.session_state.page = "About / Class Info"
+        st.experimental_rerun()
+
+def back_to_home():
+    if st.session_state.page != "Home":
+        st.markdown("---")
+        if st.button("🏠 Back to Home"):
+            st.session_state.page = "Home"
+            st.experimental_rerun()
+
 
 def manual_input():
     st.header("Manual Input Prediction")
@@ -63,6 +92,7 @@ def manual_input():
         sns.barplot(x=["Benign", "Malignant"], y=probabilities, ax=ax)
         ax.set_title("Prediction Probability")
         st.pyplot(fig)
+    back_to_home()
 
 def upload_dataset():
     st.header("Batch Prediction from CSV")
@@ -99,6 +129,7 @@ def upload_dataset():
 
             csv = output.to_csv(index=False).encode("utf-8")
             st.download_button("Download Predictions", csv, "predictions.csv", "text/csv")
+    back_to_home()
 
 def about():
     st.header("About & Class Information")
@@ -112,7 +143,7 @@ def about():
     **Features Explained:**
     These features are derived from digitized images of breast mass FNA scans.
     """)
-
+    back_to_home()
 # Navigation
 pages = {
     "Home": home,
@@ -121,6 +152,14 @@ pages = {
     "About / Class Info": about
 }
 
+# Initialize session state for navigation
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
+
+# Sidebar navigation (sets session state)
 st.sidebar.title("Navigation")
-selection = st.sidebar.radio("Go to", list(pages.keys()))
-pages[selection]()
+selection = st.sidebar.radio("Go to", list(pages.keys()), index=list(pages.keys()).index(st.session_state.page))
+st.session_state.page = selection
+
+# Render the selected page
+pages[st.session_state.page]()
