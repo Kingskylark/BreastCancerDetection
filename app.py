@@ -31,7 +31,7 @@ def home():
 
     This tool allows you to either **upload a dataset** for batch predictions, or **manually enter feature values** to predict whether a breast tumor is **Benign** or **Malignant**.
 
-    > **Note**: On mobile devices, the sidebar may be hidden. Use the options below directly.
+    > **Note**: On mobile devices, the sidebar may be hidden. Use the options below directly by double clicking any option.
     """)
 
     st.subheader("Choose an Action Below:")
@@ -53,14 +53,12 @@ def home():
         st.session_state.page = "About / Class Info"
 
 
-        
-
 def back_to_home():
     if st.session_state.page != "Home":
         st.markdown("---")
         if st.button("🏠 Back to Home"):
             st.session_state.page = "Home"
-            st.experimental_rerun()
+            
 
 
 def manual_input():
@@ -157,11 +155,12 @@ pages = {
 # Initialize session state for navigation
 if "page" not in st.session_state:
     st.session_state.page = "Home"
-
+    
 # Sidebar navigation (sets session state)
 st.sidebar.title("Navigation")
 selection = st.sidebar.radio("Go to", list(pages.keys()), index=list(pages.keys()).index(st.session_state.page))
 st.session_state.page = selection
 
 # Render the selected page
+
 pages[st.session_state.page]()
